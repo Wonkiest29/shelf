@@ -1,0 +1,5 @@
+mongourl: ""
+SECRET_KEY: ""
+
+dashboard:
+  public: true

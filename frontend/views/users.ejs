@@ -1,0 +1,21 @@
+<%- include('layout', { title: 'Users', body: `
+<section class="section">
+    <div class="container">
+        <h1 class="title">Users</h1>
+        <table class="table is-fullwidth is-striped mt-5">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
+                <!-- Users will be rendered here -->
+            </tbody>
+        </table>
+    </div>
+</section>
+<script src="/path/to/your/users.js"></script>
+` }) %>

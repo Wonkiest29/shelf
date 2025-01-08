@@ -1,0 +1,63 @@
+<%- include('layout', { title: 'Items', token: token, body: `
+<section class="section">
+    <div class="container">
+        <h1 class="title">Items</h1>
+        <div class="control mt-5">
+            <button class="button is-primary" onclick="openCreateModal()">Create Item</button>
+        </div>
+        <table class="table is-fullwidth is-striped mt-5">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="items-table-body">
+                <!-- Items will be rendered here -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Modal for creating/updating item -->
+<div class="modal" id="item-modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title" id="modal-title">Create Item</p>
+            <button class="delete" aria-label="close" onclick="closeModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <form id="item-form">
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="item-name" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Type</label>
+                    <div class="control">
+                        <input class="input" type="text" id="item-type" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="control">
+                        <textarea class="textarea" id="item-description" required></textarea>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" onclick="saveItem()">Save</button>
+            <button class="button" onclick="closeModal()">Cancel</button>
+        </footer>
+    </div>
+</div>
+
+<script src="/items.js"></script>
+` }) %>

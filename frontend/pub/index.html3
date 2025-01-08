@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+    <link href="/node_modules/bulma/css/bulma.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <nav id="navbar" class="navbar is-hidden">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <img src="https://bulma.io/images/bulma-logo.png" alt="Logo">
+            </a>
+            <div class="navbar-burger" data-target="navbarMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div id="navbarMenu" class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/">Home</a>
+                <a class="navbar-item" href="/items">Items</a>
+                <a class="navbar-item" href="/settings">Settings</a>
+            </div>
+            <div class="navbar-end">
+                <a class="navbar-item" href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Items</h1>
+            <div class="control mt-5">
+                <button class="button is-link" onclick="getItems()">Get Items</button>
+            </div>
+            <table class="table is-fullwidth is-striped mt-5">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="items-table-body">
+                    <!-- Items will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('navbar').classList.remove('is-hidden');
+            }
+
+            const burgerIcon = document.querySelector('.navbar-burger');
+            const navbarMenu = document.getElementById('navbarMenu');
+            burgerIcon.addEventListener('click', () => {
+                burgerIcon.classList.toggle('is-active');
+                navbarMenu.classList.toggle('is-active');
+            });
+        });
+
+        async function getItems() {
+            const token = localStorage.getItem('token');
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+            const response = await fetch('http://127.0.0.1:8000/items/', {
+                method: 'GET',
+                headers: headers
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                if (Array.isArray(data)) {
+                    const itemsTableBody = document.getElementById('items-table-body');
+                    itemsTableBody.innerHTML = '';
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.description}</td>
+                        `;
+                        itemsTableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('No items found in response:', data);
+                    alert('No items found.');
+                }
+            } else if (response.status === 403) {
+                alert('Access forbidden. Please login.');
+            } else {
+                console.error('Failed to fetch items:', data);
+                alert('Failed to fetch items: ' + data.message);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            document.getElementById('navbar').classList.add('is-hidden');
+        }
+
+        // Call getItems on page load
+        window.onload = getItems;
+    </script>
+</body>
+</html>

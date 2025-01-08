@@ -1,12 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>signin</title>
-    <link href="/node_modules/bulma/css/bulma.min.css" rel="stylesheet">
-</head>
-<body>
+<%- include('layout', { title: 'Sign In', body: `
 <section class="section">
     <div class="container">
         <div class="columns is-centered">
@@ -61,5 +53,4 @@
         }
     });
 </script>
-</body>
-</html>
+` }) %>

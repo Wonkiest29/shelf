@@ -1,0 +1,59 @@
+<%- include('layout', { title: 'Users', body: `
+
+        <section class="section">
+            <div class="container">
+                <h1 class="title">Settings</h1>
+                <form action="/settings/update" method="POST">
+                    <div class="field">
+                        <label class="label">Secret Token</label>
+                        <div class="control">
+                            <input class="input" type="text" name="secretToken" placeholder="Enter new secret token">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">MongoDB URL</label>
+                        <div class="control">
+                            <input class="input" type="text" name="mongoUrl" placeholder="Enter new MongoDB URL">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Public Items</label>
+                        <div class="control">
+                            <input class="input" type="text" name="publicItems" placeholder="Enter public items">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const authLinks = document.getElementById('auth-links');
+
+            if (token) {
+                authLinks.innerHTML = '<a class="navbar-item" href="#" onclick="logout()">Logout</a>';
+            } else {
+                authLinks.innerHTML = '<a class="navbar-item" href="/login">Login</a><a class="navbar-item" href="/register">Register</a>';
+            }
+
+            const burgerIcon = document.querySelector('.navbar-burger');
+            const navbarMenu = document.getElementById('navbarMenu');
+            burgerIcon.addEventListener('click', () => {
+                burgerIcon.classList.toggle('is-active');
+                navbarMenu.classList.toggle('is-active');
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '/';
+        }
+    </script>
+
+` }) %>

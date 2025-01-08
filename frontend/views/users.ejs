@@ -17,5 +17,45 @@
         </table>
     </div>
 </section>
-<script src="/path/to/your/users.js"></script>
+<div id="edit-user-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Edit User</p>
+            <button class="delete" aria-label="close" id="close-modal-button"></button>
+        </header>
+        <section class="modal-card-body">
+            <form id="edit-user-form">
+                <div class="field">
+                    <label class="label">Username</label>
+                    <div class="control">
+                        <input class="input" type="text" id="edit-username" name="username" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Password</label>
+                    <div class="control">
+                        <input class="input" type="password" id="edit-password" name="password" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Role</label>
+                    <div class="control">
+                        <div class="select">
+                            <select id="edit-role" name="role" required>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-success" id="save-user-button">Save changes</button>
+            <button class="button" id="cancel-user-button">Cancel</button>
+        </footer>
+    </div>
+</div>
+<script src="/users.js"></script>
 ` }) %>

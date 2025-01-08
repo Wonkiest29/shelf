@@ -8,6 +8,7 @@ from tools.mongo import get_mongo_client
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from bson import ObjectId
+from fastapi.responses import JSONResponse
 
 ph = PasswordHasher()
 
@@ -109,7 +110,8 @@ async def update_user(id, data, token):
         return {"error": "User not found"}
     
 async def delete_user(userid, token):
-    print(userid)
+    if token is None:
+        return {"error": "No token provided"}, 401
     if userid == "677e4fa9e07a6de17f955efe":
         return {"error": "You can't change this user"}
 
@@ -130,13 +132,26 @@ async def delete_user(userid, token):
 
 
 
-async def users():
+async def users(jwt):
+    print(jwt)
+    if not jwt:
+        return JSONResponse(content={"error": "No token provided"}, status_code=401)
+        
+    # if 'error' in a:
+        # return a, 401
+
+    try:
+        is_admin = await tools.is_admin(a['subid'])
+    except KeyError:
+        return {"error": "Invalid token structure"}, 401
+
+    if not is_admin:
+        return {"error": "Insufficient permissions"}, 403
+
     client = await get_mongo_client()
     db = client['shelf']
     collection = db['accounts']
-    # a = tools.jwt_veiryf(jwt)
-    # print(a)
-    # tools.is_admin(a['subid'])
+
     users_cursor = collection.find({}, {"_id": 1, "username": 1, "role": 1})
     users = []
     async for user in users_cursor:
@@ -145,4 +160,5 @@ async def users():
             "username": user["username"],
             "role": user["role"]
         })
+
     return users

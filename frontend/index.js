@@ -27,7 +27,7 @@ app.get('/login', (req, res) => {
 
 app.get('/register', (req, res) => {
     const token = req.cookies ? req.cookies.token : null;
-    res.render('register', { title: 'Register', token });
+    res.render('signup', { title: 'Register', token });
 });
 
 app.get('/users', (req, res) => {

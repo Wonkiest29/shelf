@@ -5,7 +5,7 @@ import json
 from pydantic import BaseModel
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 
 
 
@@ -32,13 +32,16 @@ class UserUpdate(BaseModel):
 def extract_token(request: fastapi.Request):
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
-        return auth_header[len("Bearer "):]
-    return None
+        # print(auth_header)
+        token = auth_header[len("Bearer "):]
+        if token.lower() == "null":
+            return False
+        return token
+    return 
 
 
 @app.post("/signin/", tags=["account"])
 async def login(data: dict):
-    print(data)
     return await tools.signin(data)
 
 @app.post("/signup/", tags=["account"])
@@ -46,16 +49,19 @@ async def register(data: dict):
     return await tools.signup(data)
 
 @app.get("/users/", tags=["account"])
-async def get_users():
-    return await tools.users()
+async def get_users(request: fastapi.Request):
+    token = extract_token(request)
+    # if not token:
+        # return JSONResponse(content={"error": "No token provided"}, status_code=401)
+    return await tools.users(token)
 
-@app.put("/user/{id}", tags=["account"])
+@app.put("/users/{id}", tags=["account"])
 async def update_user(id: str, data: UserUpdate, request: fastapi.Request):
     
     token = extract_token(request)
     return await tools.update_user(id, data.dict(exclude_unset=True), token)
 
-@app.delete("/user/{user_id}", tags=["account"])
+@app.delete("/users/{user_id}", tags=["account"])
 async def delete_user(user_id: str, token: str = fastapi.Depends(extract_token)):
     return await tools.delete_user(user_id, token)
 
@@ -74,7 +80,7 @@ async def create_item(data: dict):
 
 @app.get("/items/{item_id}", tags=["items"])
 async def read_item(item_id: str):
-    print(item_id)
+    # print(item_id)
     return await tools.get_item(item_id)
 
 @app.put("/items/{item_id}", tags=["items"])

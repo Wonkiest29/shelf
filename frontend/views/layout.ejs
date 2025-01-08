@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link href="/node_modules/bulma/css/bulma.min.css" rel="stylesheet">
+    <script src="/node_modules/bulma-toast/dist/bulma-toast.min.js"></script>
 </head>
 <body>
-    <nav id="navbar" class="navbar is-hidden">
+    <nav id="navbar" class="navbar">
         <div class="navbar-brand">
             <a class="navbar-item" href="/">
                 <img src="https://bulma.io/images/bulma-logo.png" alt="Logo">
@@ -23,14 +24,10 @@
                 <a class="navbar-item" href="/">Home</a>
                 <a class="navbar-item" href="/items">Items</a>
                 <a class="navbar-item" href="/settings">Settings</a>
+                <a class="navbar-item" href="/users">Users</a>
             </div>
-            <div class="navbar-end">
-                <% if (token) { %>
-                    <a class="navbar-item" href="#" onclick="logout()">Logout</a>
-                <% } else { %>
-                    <a class="navbar-item" href="/login">Login</a>
-                    <a class="navbar-item" href="/register">Register</a>
-                <% } %>
+            <div class="navbar-end" id="auth-links">
+                <!-- Authentication links will be dynamically inserted here -->
             </div>
         </div>
     </nav>
@@ -40,8 +37,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
+            const authLinks = document.getElementById('auth-links');
+
             if (token) {
-                document.getElementById('navbar').classList.remove('is-hidden');
+                authLinks.innerHTML = '<a class="navbar-item" href="#" onclick="logout()">Logout</a>';
+            } else {
+                authLinks.innerHTML = '<a class="navbar-item" href="/login">Login</a><a class="navbar-item" href="/register">Register</a>';
             }
 
             const burgerIcon = document.querySelector('.navbar-burger');
@@ -54,7 +55,18 @@
 
         function logout() {
             localStorage.removeItem('token');
-            document.getElementById('navbar').classList.add('is-hidden');
+            window.location.href = '/';
+        }
+
+        function showToast(message, type = 'is-danger') {
+            bulmaToast.toast({
+                message: message,
+                type: type,
+                dismissible: true,
+                pauseOnHover: true,
+                duration: 3000,
+                position: 'top-right'
+            });
         }
     </script>
 </body>

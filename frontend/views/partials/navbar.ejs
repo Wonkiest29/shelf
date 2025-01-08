@@ -1,0 +1,28 @@
+<nav class="navbar">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/images/logo.png" alt="Logo">
+        </a>
+        <div class="navbar-burger" data-target="navbarMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <div id="navbarMenu" class="navbar-menu">
+        <div class="navbar-start">
+            <a class="navbar-item" href="/">Home</a>
+            <a class="navbar-item" href="/items">Items</a>
+            <a class="navbar-item" href="/settings">Settings</a>
+            <a class="navbar-item" href="/users">Settings</a>
+        </div>
+        <div class="navbar-end">
+            <% if (token) { %>
+                <a class="navbar-item" href="#" onclick="logout()">Logout</a>
+            <% } else { %>
+                <a class="navbar-item" href="/login">Login</a>
+                <a class="navbar-item" href="/register">Register</a>
+            <% } %>
+        </div>
+    </div>
+</nav>

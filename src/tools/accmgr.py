@@ -48,6 +48,20 @@ async def signup(data):
         await collection.insert_one({"username": username, "password": hashed, "role": "user"})
         return {"status": "OK"}
 
+async def signup_admin(data):
+    username = data.get('username')
+    password = data.get('password')
+    client = await get_mongo_client()
+    db = client['shelf']
+    collection = db['accounts']
+    user = await collection.find_one({"username": username})
+    if user:
+        return {"error": "User already exists"}
+    else:
+        hashed = ph.hash(password)
+        await collection.insert_one({"username": username, "password": hashed, "role": "admin"})
+        return {"status": "OK"}
+
 async def update_dashboard(data):
 
     config = tools.read_cfg()
@@ -72,6 +86,18 @@ async def update_dashboard(data):
     with open('config.yml', 'w') as file:
         yaml.safe_dump(config, file)
 
+    return {"status": "OK"}
+
+async def deletedb():
+    config = tools.read_cfg()
+
+    if config['demo'] == True:
+        return {"error": "Demo mode is enabled you can't change this settings"}
+
+    client = await get_mongo_client()
+    db = client['shelf']
+    await db.drop_collection('items')
+    await db.drop_collection('accounts')
     return {"status": "OK"}
 
 async def update_user(id, data, token):

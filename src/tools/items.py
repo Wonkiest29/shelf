@@ -12,9 +12,13 @@ async def get_items():
         db = client['shelf']
         collection = db['shelf']
         items = []
-        async for item in collection.find():
-            item.pop('_id', None)  # Remove the _id field
-            items.append(item)
+        async for item in collection.find({}, {"_id": 1, "name": 1, "type": 1, "description": 1}):
+            items.append({
+                "id": str(item["_id"]),
+                "name": item["name"],
+                "type": item["type"],
+                "description": item["description"]
+            })
         return items
     else:
         return {"error": "Access denied"}

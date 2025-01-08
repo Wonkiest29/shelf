@@ -7,6 +7,7 @@ import tools
 from tools.mongo import get_mongo_client
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
+from bson import ObjectId
 
 ph = PasswordHasher()
 
@@ -33,21 +34,26 @@ async def signin(data):
         return {"error": "User not found"}
     
 async def signup(data):
-    data = json.loads(data)
     username = data.get('username')
     password = data.get('password')
     client = await get_mongo_client()
-    db = client['auth']
-    collection = db['users']
+    db = client['shelf']
+    collection = db['accounts']
     user = await collection.find_one({"username": username})
     if user:
         return {"error": "User already exists"}
     else:
         hashed = ph.hash(password)
-        await collection.insert_one({"username": username, "password": hashed, "permissions": []})
+        await collection.insert_one({"username": username, "password": hashed, "role": "user"})
         return {"status": "OK"}
 
 async def update_dashboard(data):
+
+    config = tools.read_cfg()
+
+    if config['demo'] == True:
+        return {"error": "Demo mode is enabled you can't change this settings"}
+
     data = json.loads(data)
     dashboard = data.get('public')
     mongourl = data.get('mongourl')
@@ -67,32 +73,76 @@ async def update_dashboard(data):
 
     return {"status": "OK"}
 
-async def update_user(data):
-    data = json.loads(data)
-    id_user = data.get('id')
+async def update_user(id, data, token):
     username = data.get('username')
     password = data.get('password')
-    permissions = data.get('permissions')
+    permissions = data.get('role')
 
-    decoded_jwt = tools.jwt_veiryf(jwt)
-    
+    if username == "admin":
+        return {"error": "You can't change this user"}
+    if id == "677e4fa9e07a6de17f955efe":
+        return {"error": "You can't change this user"}
+
+    decoded_jwt = tools.jwt_verify(token)
     client = await get_mongo_client()
     db = client['shelf']
-    collection = db['users']
-    user = await collection.find_one({"_id": decoded_jwt['subid']})
+    collection = db['accounts']
+    print(decoded_jwt["subid"])
+    id_admin = decoded_jwt['subid']
+    user = await collection.find_one({"_id": ObjectId(decoded_jwt["subid"])})
+    print(user)
     if user:
-        if user['permissions'].count('admin') > 0:
+        if 'admin' in user['role']:
             update_data = {}
             if username:
                 update_data['username'] = username
             if password:
                 update_data['password'] = ph.hash(password)
             if permissions:
-                update_data['permissions'] = permissions
+                update_data['role'] = permissions
 
-            await collection.update_one({"_id": id_user}, {"$set": update_data})
+            await collection.update_one({"_id": ObjectId(id)}, {"$set": update_data})
             return {"status": "OK"}
         else:
             return {"error": "Insufficient permissions"}
     else:
         return {"error": "User not found"}
+    
+async def delete_user(userid, token):
+    print(userid)
+    if userid == "677e4fa9e07a6de17f955efe":
+        return {"error": "You can't change this user"}
+
+    decoded_jwt = tools.jwt_verify(token)
+    client = await get_mongo_client()
+    db = client['shelf']
+    collection = db['accounts']
+    user = await collection.find_one({"_id": ObjectId(decoded_jwt['subid'])})
+    if user:
+        try:
+            await collection.delete_one({"_id": ObjectId(userid)})
+            return {"status": "OK"}
+        except Exception as e:
+            print(e)
+            return {"error": "Failed to delete user"}
+    else:
+        return {"error": "Insufficient permissions or user not found"}
+
+
+
+async def users():
+    client = await get_mongo_client()
+    db = client['shelf']
+    collection = db['accounts']
+    # a = tools.jwt_veiryf(jwt)
+    # print(a)
+    # tools.is_admin(a['subid'])
+    users_cursor = collection.find({}, {"_id": 1, "username": 1, "role": 1})
+    users = []
+    async for user in users_cursor:
+        users.append({
+            "_id": str(user["_id"]),
+            "username": user["username"],
+            "role": user["role"]
+        })
+    return users

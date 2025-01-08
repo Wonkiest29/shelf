@@ -11,24 +11,27 @@ from argon2.exceptions import VerifyMismatchError
 ph = PasswordHasher()
 
 async def signin(data):
-    data = json.loads(data)
     username = data.get('username')
     password = data.get('password')
     client = await get_mongo_client()
-    db = client['auth']
-    collection = db['users']
+    db = client['shelf']
+    collection = db['accounts']
     user = await collection.find_one({"username": username})
+    config = tools.read_cfg()
+    token = config['SECRET_KEY']
+    print(user)
     if user:
         ph.verify(user['password'], password)
         data = {
-            "username": user['username'],
-            "permissions": user['permissions']
+            "subid": str(user['_id']),
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)
         }
-        return data
+        token = jwt.encode(data, token, algorithm="HS256")
+        return {"token": token}
+        # return data
     else:
         return {"error": "User not found"}
     
-
 async def signup(data):
     data = json.loads(data)
     username = data.get('username')
@@ -43,8 +46,6 @@ async def signup(data):
         hashed = ph.hash(password)
         await collection.insert_one({"username": username, "password": hashed, "permissions": []})
         return {"status": "OK"}
-
-
 
 async def update_dashboard(data):
     data = json.loads(data)
@@ -61,11 +62,10 @@ async def update_dashboard(data):
     config['mongourl'] = mongourl
     config['SECRET_KEY'] = secret
 
-    with open('/path/to/config.yml', 'w') as file:
+    with open('config.yml', 'w') as file:
         yaml.safe_dump(config, file)
 
     return {"status": "OK"}
-
 
 async def update_user(data):
     data = json.loads(data)

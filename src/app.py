@@ -48,6 +48,10 @@ async def login(data: dict):
 async def register(data: dict):
     return await tools.signup(data)
 
+@app.post("/signup/admin", tags=["account"])
+async def register_admin(data: dict):
+    return await tools.signup(data)
+
 @app.get("/users/", tags=["account"])
 async def get_users(request: fastapi.Request):
     token = extract_token(request)
@@ -67,6 +71,10 @@ async def delete_user(user_id: str, token: str = fastapi.Depends(extract_token))
 
 
 @app.put("/settings/", tags=["account"])
+async def update_settings(data: dict):
+    return await tools.update_dashboard(data)
+
+@app.delete("/deletedb/", tags=["account"])
 async def update_settings(data: dict):
     return await tools.update_dashboard(data)
 

@@ -25,7 +25,7 @@ function closeModal() {
 }
 
 async function loadItems() {
-    const response = await fetch('http://127.0.0.1:8000/items/');
+    const response = await fetch('http://192.168.1.42:8000/items/');
     const data = await response.json();
     const itemsTableBody = document.getElementById('items-table-body');
     itemsTableBody.innerHTML = '';
@@ -51,7 +51,7 @@ async function saveItem() {
     const description = document.getElementById('item-description').value;
 
     const method = currentItem ? 'PUT' : 'POST';
-    const url = currentItem ? `http://127.0.0.1:8000/items/${currentItem.id}` : 'http://127.0.0.1:8000/items/';
+    const url = currentItem ? `http://192.168.1.42:8000/items/${currentItem.id}` : 'http://192.168.1.42:8000/items/';
 
     const response = await fetch(url, {
         method: method,
@@ -70,7 +70,7 @@ async function saveItem() {
 }
 
 async function deleteItem(id) {
-    const response = await fetch(`http://127.0.0.1:8000/items/${id}`, {
+    const response = await fetch(`http://192.168.1.42:8000/items/${id}`, {
         method: 'DELETE'
     });
 

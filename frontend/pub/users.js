@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadUsers() {
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch('http://127.0.0.1:8000/users/', {
+        const response = await fetch('http://192.168.1.42:8000/users/', {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -72,7 +72,7 @@ async function saveUser() {
     const role = document.getElementById('edit-role').value;
     const password = document.getElementById('edit-password').value;
 
-    const response = await fetch(`http://127.0.0.1:8000/users/${currentUser._id}`, {
+    const response = await fetch(`http://192.168.1.42:8000/users/${currentUser._id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ async function saveUser() {
 
 async function deleteUser(id) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`http://127.0.0.1:8000/users/${id}`, {
+    const response = await fetch(`http://192.168.1.42:8000/users/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`

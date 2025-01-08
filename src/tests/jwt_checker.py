@@ -14,6 +14,6 @@ def check_jwt(token):
 
 # Example usage
 if __name__ == "__main__":
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJpZCI6IjY3N2U0ZmE5ZTA3YTZkZTE3Zjk1NWVmZSIsImV4cCI6MTczNjM1NTk4NH0.GZm-aPcISVrZHv_MeenaampJWq-JJk2g1VbJUfkYqG4"
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWJpZCI6IjY3N2U0ZmE5ZTA3YTZkZTE3Zjk1NWVmZSIsImV4cCI6MTczNjM3MDU5OX0.zM-AgNjiFH320WdaiZm5kebFKJISlLmCoslxdzxuU1w"
     result = check_jwt(token)
     print(result)

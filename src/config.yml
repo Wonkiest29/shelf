@@ -1,6 +1,6 @@
 mongourl: "mongodb://root:rootpassword@127.0.0.1:27017/?directConnection=true"
 SECRET_KEY: "your_secret_key"
 collection: "shelf"
-demo: true
+demo: false
 dashboard:
   public: true

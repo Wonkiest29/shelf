@@ -2,7 +2,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const app = express();
-const port = 3000;
+const port = 3001;
+const ip = "0.0.0.0";
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
@@ -45,6 +46,9 @@ app.get('/items', (req, res) => {
     res.render('items', { title: 'Items', token });
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+
+
+
+app.listen(port, ip, () => {
+    console.log(`Server is running on http://${ip}:${port}`);
 });

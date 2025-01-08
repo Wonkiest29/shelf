@@ -21,7 +21,7 @@ async def signin(data):
     user = await collection.find_one({"username": username})
     config = tools.read_cfg()
     token = config['SECRET_KEY']
-    print(user)
+    # print(user)
     if user:
         ph.verify(user['password'], password)
         data = {
@@ -68,6 +68,8 @@ async def update_dashboard(data):
 
     if config['demo'] == True:
         return {"error": "Demo mode is enabled you can't change this settings"}
+    
+
 
     data = json.loads(data)
     dashboard = data.get('public')
@@ -88,15 +90,22 @@ async def update_dashboard(data):
 
     return {"status": "OK"}
 
-async def deletedb():
+async def deletedb(key):
     config = tools.read_cfg()
 
     if config['demo'] == True:
         return {"error": "Demo mode is enabled you can't change this settings"}
 
+    key_m = tools.jwt_verify(key)
+
+    admin = await tools.is_user(key_m['subid'], admin=True)
+
+    if not admin:
+        return {"error": "You don't have permissions to do that"}
+
     client = await get_mongo_client()
     db = client['shelf']
-    await db.drop_collection('items')
+    await db.drop_collection('shelf')
     await db.drop_collection('accounts')
     return {"status": "OK"}
 
@@ -104,6 +113,12 @@ async def update_user(id, data, token):
     username = data.get('username')
     password = data.get('password')
     permissions = data.get('role')
+
+    key = tools.jwt_verify(token)
+    admin = await tools.is_user(key['subid'], admin=True)
+
+    if not admin:
+        return {"error": "You don't have permissions to do that"}
 
     if username == "admin":
         return {"error": "You can't change this user"}
@@ -141,6 +156,12 @@ async def delete_user(userid, token):
     if userid == "677e4fa9e07a6de17f955efe":
         return {"error": "You can't change this user"}
 
+    key = tools.jwt_verify(token)
+    admin = await tools.is_user(key['subid'], admin=True)
+
+    if not admin:
+        return {"error": "You don't have permissions to do that"}
+
     decoded_jwt = tools.jwt_verify(token)
     client = await get_mongo_client()
     db = client['shelf']
@@ -159,20 +180,15 @@ async def delete_user(userid, token):
 
 
 async def users(jwt):
-    print(jwt)
+
     if not jwt:
         return JSONResponse(content={"error": "No token provided"}, status_code=401)
-        
-    # if 'error' in a:
-        # return a, 401
 
-    try:
-        is_admin = await tools.is_admin(a['subid'])
-    except KeyError:
-        return {"error": "Invalid token structure"}, 401
+    key = tools.jwt_verify(jwt)
+    admin = await tools.is_user(key['subid'], admin=True)
 
-    if not is_admin:
-        return {"error": "Insufficient permissions"}, 403
+    if not admin:
+        return JSONResponse(content={"error": "You don't have permissions to do that"}, status_code=401)
 
     client = await get_mongo_client()
     db = client['shelf']

@@ -17,41 +17,39 @@ def read_cfg():
 def jwt_verify(jwt_token):
     config = read_cfg()
     key = config["SECRET_KEY"]
+    # print(key)
     if not jwt_token:
         return {"error": "No token provided"}, 401
-    # print(jwt_token)
     try:
-        return jwt.decode(jwt_token, key, algorithms=["HS256"])
+        decoded_token = jwt.decode(jwt_token, key, algorithms=["HS256"])
+        # print(decoded_token)
+        return decoded_token
     except jwt.ExpiredSignatureError:
         return {"error": "Token expired"}
     except jwt.InvalidTokenError:
         return {"error": "Invalid token"}
     
-from bson import ObjectId
 
-async def is_admin(id):
+async def is_user(id, admin=None):
     client = await get_mongo_client()
     db = client['shelf']
     collection = db['accounts']
     try:
         user = await collection.find_one({"_id": ObjectId(id)})
+        if not user:
+            # print("User not found")
+            return False
+
+        if admin is True:
+            if isinstance(user.get('role'), str) and 'admin' in user['role']:
+                # print("User is admin")
+                return True
+            else:
+                # print("User is not admin")
+                return False
+
+        # print("User found")
+        return True
     except Exception as e:
         print(f"Error finding user: {e}")
         return False
-
-    print(user)
-    if user and isinstance(user.get('role'), str):
-        if 'admin' in user['role']:
-            print("User is admin")
-            return True
-    print("User is not admin")
-    return False
-
-async def is_user(id):
-    client = await get_mongo_client()
-    db = client['auth']
-    collection = db['users']
-    user = await collection.find_one({"_id": id})
-    if user:
-        return True
-    return False

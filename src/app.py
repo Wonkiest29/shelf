@@ -31,8 +31,8 @@ class UserUpdate(BaseModel):
 
 def extract_token(request: fastapi.Request):
     auth_header = request.headers.get("Authorization")
+    # print(auth_header)
     if auth_header and auth_header.startswith("Bearer "):
-        # print(auth_header)
         token = auth_header[len("Bearer "):]
         if token.lower() == "null":
             return False
@@ -55,6 +55,7 @@ async def register_admin(data: dict):
 @app.get("/users/", tags=["account"])
 async def get_users(request: fastapi.Request):
     token = extract_token(request)
+    # print(token)
     # if not token:
         # return JSONResponse(content={"error": "No token provided"}, status_code=401)
     return await tools.users(token)
@@ -75,8 +76,8 @@ async def update_settings(data: dict):
     return await tools.update_dashboard(data)
 
 @app.delete("/deletedb/", tags=["account"])
-async def update_settings(data: dict):
-    return await tools.update_dashboard(data)
+async def delete_db(token: str = fastapi.Depends(extract_token)):
+    return await tools.deletedb(token)
 
 @app.get("/items/", tags=["items"])
 async def get_items():

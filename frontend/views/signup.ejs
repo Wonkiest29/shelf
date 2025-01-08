@@ -36,7 +36,7 @@
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        const response = await fetch('http://127.0.0.1:8000/signup/', {
+        const response = await fetch('http://192.168.1.42:8000/signup/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

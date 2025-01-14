@@ -25,7 +25,7 @@ function closeModal() {
 }
 
 async function loadItems() {
-    const response = await fetch('http://192.168.1.42:8000/items/');
+    const response = await fetch('/api/items/');
     const data = await response.json();
     const itemsTableBody = document.getElementById('items-table-body');
     itemsTableBody.innerHTML = '';
@@ -70,7 +70,7 @@ async function saveItem() {
 }
 
 async function deleteItem(id) {
-    const response = await fetch(`http://192.168.1.42:8000/items/${id}`, {
+    const response = await fetch(`/api/items/${id}`, {
         method: 'DELETE'
     });
 
